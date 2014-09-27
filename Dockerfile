@@ -5,16 +5,17 @@
 #
 
 # Pull base image.
-FROM dockerfile/ubuntu
+FROM centos:centos6
+
+RUN echo -e "[nginx]\nname=nginx repo\nbaseurl=http://nginx.org/packages/centos/6/x86_64/\ngpgcheck=0\nenabled=1" \
+  > /etc/yum.repos.d/nginx.repo
 
 # Install Nginx.
 RUN \
-  add-apt-repository -y ppa:nginx/stable && \
-  apt-get update && \
-  apt-get install -y nginx && \
-  rm -rf /var/lib/apt/lists/* && \
-  echo "\ndaemon off;" >> /etc/nginx/nginx.conf && \
-  chown -R www-data:www-data /var/lib/nginx
+  yum clean all && \
+  yum update -y && \
+  yum install nginx -y && \
+  echo -e "\ndaemon off;" >> /etc/nginx/nginx.conf
 
 # Define mountable directories.
 VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/certs", "/etc/nginx/conf.d", "/var/log/nginx"]
